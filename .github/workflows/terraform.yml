@@ -37,8 +37,4 @@ jobs:
 
       - name: Run TFLint
         working-directory: ${{ inputs.path }}
-        run: tflint --minimum-failure-severity=error
-
-      - name: Run TFLint
-        working-directory: ${{ inputs.path }}
         run: tflint --minimum-failure-severity=warning
