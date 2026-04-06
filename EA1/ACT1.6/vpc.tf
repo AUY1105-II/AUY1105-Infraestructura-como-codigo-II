@@ -57,15 +57,15 @@ resource "aws_subnet" "subnet_privada_2" {
 }
 
 # Crear un NAT Gateway
-resource "aws_eip" "nat_eip" {
+resource "aws_eip" "nat_ip" {
   vpc = true
   tags = {
-    Name = "nat-eip"
+    Name = "nat-ip"
   }
 }
 
 resource "aws_nat_gateway" "nat_gw" {
-  allocation_id = aws_eip.nat_eip.id
+  allocation_id = aws_eip.nat_ip.id
   subnet_id     = aws_subnet.subnet_publica_1.id
   tags = {
     Name = "nat-gw"
