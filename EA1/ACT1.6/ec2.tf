@@ -5,22 +5,38 @@ resource "aws_key_pair" "mi_key" {
 
 resource "aws_security_group" "ssh_access" {
   name        = "ssh-access"
-  description = "Permitir acceso SSH desde cualquier IPv4"
+  description = "SSH restricted ingress and specific egress"
   vpc_id      = aws_vpc.mi_vpc.id
 
   ingress {
-    description = "SSH desde cualquier lugar"
+    description = "SSH from allowed CIDR only"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Permitir desde cualquier dirección IPv4
+    cidr_blocks = [var.ssh_ingress_cidr]
   }
 
   egress {
-    description = "Permitir trafico de salida a cualquier lugar"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1" # Todos los protocolos
+    description = "HTTPS outbound"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "HTTP outbound"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "DNS UDP"
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -30,16 +46,32 @@ resource "aws_security_group" "ssh_access" {
 }
 
 resource "aws_instance" "mi_ec2" {
-  ami                    = "ami-012967cc5a8c9f891"
-  instance_type          = "t2.micro"
-  key_name               = aws_key_pair.mi_key.key_name
-  subnet_id              = aws_subnet.subnet_publica_1.id
-  vpc_security_group_ids = [aws_security_group.ssh_access.id]
+  ami                         = "ami-012967cc5a8c9f891"
+  instance_type               = "t2.micro"
+  key_name                    = aws_key_pair.mi_key.key_name
+  subnet_id                   = aws_subnet.subnet_publica_1.id
+  vpc_security_group_ids      = [aws_security_group.ssh_access.id]
+  associate_public_ip_address = true
+
+  monitoring = true
+
+  iam_instance_profile = "LabInstanceProfile"
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+  }
 
   tags = {
     Name = "MiInstancia"
   }
+
   root_block_device {
     encrypted = true
   }
+
+  # CKV_AWS_135: en t2.micro a veces AWS rechaza ebs_optimized=true.
+  # Probar solo si apply lo acepta; si no, omitir y documentar / suprimir check.
+  # ebs_optimized = true
 }
