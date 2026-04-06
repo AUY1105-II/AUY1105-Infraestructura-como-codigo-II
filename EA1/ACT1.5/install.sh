@@ -43,8 +43,9 @@ rm -rf terraform-docs.tar.gz README.md LICENSE || handle_error "6.5 (limpieza de
 
 # 7. Instalar OPA
 echo "Instalando OPA..."
-curl -L -o opa "$OPA_URL" || handle_error "7.1 (descarga de OPA)"
-chmod +x opa || handle_error "7.2 (asignar permisos a OPA)"
-sudo mv opa /usr/local/bin/ || handle_error "7.3 (mover OPA a /usr/local/bin)"
+curl -L -o opa https://github.com/open-policy-agent/opa/releases/latest/download/opa_linux_amd64_static
+chmod +x opa
+sudo mv opa /usr/local/bin/
+opa version
 
 echo "Instalación completada con éxito."
