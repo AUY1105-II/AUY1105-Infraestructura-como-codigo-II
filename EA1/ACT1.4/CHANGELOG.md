@@ -2,6 +2,10 @@
 
 Este archivo contiene los cambios realizados en el proyecto de infraestructura como código utilizando Terraform. Sigue el formato [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) y respeta la semántica de versiones [Semantic Versioning](https://semver.org/lang/es/).
 
+## [1.0.2] - 2026-04-05
+### Agregado
+- Actualización del grupo de seguridad `ssh_access` para restringir el acceso SSH solo a la IP `192.168.1.100/32`.
+
 ## [Unreleased]
 ### Agregado
 - Definición inicial de variables en `variables.tf`.
