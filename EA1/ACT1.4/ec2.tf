@@ -5,19 +5,19 @@ resource "aws_key_pair" "mi_key" {
 
 resource "aws_security_group" "ssh_access" {
   name        = "ssh-access"
-  description = "Permitir acceso SSH desde cualquier IPv4"
+  description = "Permitir acceso SSH desde una IP específica"
   vpc_id      = aws_vpc.mi_vpc.id
 
   ingress {
-    description = "SSH desde cualquier lugar"
+    description = "SSH desde IP específica"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Permitir desde cualquier dirección IPv4
+    cidr_blocks = ["192.168.1.100/32"] # Acceso solo desde esta IP
   }
 
   egress {
-    description = "Permitir trafico de salida a cualquier lugar"
+    description = "Permitir tráfico de salida a cualquier lugar"
     from_port   = 0
     to_port     = 0
     protocol    = "-1" # Todos los protocolos
